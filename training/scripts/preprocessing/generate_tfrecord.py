@@ -161,14 +161,19 @@ def main(_):
     path = os.path.join(args.image_dir)
     examples = xml_to_csv(args.xml_dir)
     grouped = split(examples, 'filename')
+
+    skipped = 0
+
     for group in grouped:
         tf_example = create_tf_example(group, path)
         if(tf_example != False):
             writer.write(tf_example.SerializeToString())
         else:
+            skipped += 1
             pass
     writer.close()
     print('Successfully created the TFRecord file: {}'.format(args.output_path))
+    print("Skipped "+str(skipped)+ " entries due to processing errors")
     if args.csv_path is not None:
         examples.to_csv(args.csv_path, index=None)
         print('Successfully created the CSV file: {}'.format(args.csv_path))
